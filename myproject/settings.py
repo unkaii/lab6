@@ -21,14 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# Берем ключ из переменной окружения. 
-# Если её нет, используем ваш старый ключ как запасной (чтобы проект работал локально).
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', 
     'django-insecure-j@rqjgo9+yy80hpvje##yk(c!96z!y+s!sdfv57$%v=0h3x0m-'
 )
 
-# Берем режим отладки из окружения. По умолчанию True.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
@@ -44,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
+    'api', 
 ]
 
 MIDDLEWARE = [
@@ -89,7 +90,6 @@ DATABASES = {
         'HOST': os.environ.get('POSTGRES_HOST', 'db'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
- 
 }
 
 
@@ -153,3 +153,24 @@ TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 CSRF_TRUSTED_ORIGINS = [
     'https://django-3.de1.netrun.io',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API биржи услуг',
+    'DESCRIPTION': 'REST API для управления услугами и заказами',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SECURITY': [{'jwtAuth': []}],
+}
